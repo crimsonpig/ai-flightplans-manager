@@ -7,7 +7,7 @@ import spray.can.Http
 import com.keith.fs.airport.rest.RestServiceActor
 
 object Boot extends App with Configuration {
-	implicit val system = ActorSystem("rest-service-example")
+	implicit val system = ActorSystem("airport-web")
 	
 	val restService = system.actorOf(Props[RestServiceActor], "rest-endpoint")
 	

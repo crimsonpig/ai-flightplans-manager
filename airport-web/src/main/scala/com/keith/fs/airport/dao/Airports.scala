@@ -7,7 +7,7 @@ import com.keith.fs.airport.domain.Airport
 //  def gate = column[String]("gate")
 //}
 
-object Airports extends Table[Airport]("airports"){
+class Airports(tag: Tag) extends Table[Airport](tag, "airports"){
   
   def identifier = column[String]("ident", O.PrimaryKey)
   def latitude = column[Double]("lat")
@@ -16,12 +16,6 @@ object Airports extends Table[Airport]("airports"){
 //  def gateId = column[Int]("gate_id")
 //  def gate = foreignKey("gate_fk", gateId, Gates)(_.id)
   
-  def * = identifier ~ latitude ~ longitude ~ elevation <> (Airport, Airport.unapply _)
-
-  val findByIdentifier = for {
-    identifier <- Parameters[String]
-    ap <- this if ap.identifier is identifier
-  } yield ap
-  
+  def * = (identifier, latitude, longitude, elevation) <> (Airport.tupled, Airport.unapply)
 }
 

@@ -76,7 +76,7 @@ trait RestService extends HttpService with SLF4JLogging {
 	      }
 	    } ~ 
 	     get {
-	      parameters('identifier ?, 'latitude ?, 'longitude ?, 'elevation ?).as(AirportSearchParameters) {
+	      parameters('identifier.?, 'latitude.?, 'longitude.?, 'elevation.?).as(AirportSearchParameters) {
 	        searchParameters: AirportSearchParameters => {
 	          ctx: RequestContext =>
 	            handleRequest(ctx){
