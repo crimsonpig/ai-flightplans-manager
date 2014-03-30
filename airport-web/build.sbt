@@ -2,7 +2,12 @@ name := "airport-web"
 
 version := "1.0"
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
+
+resolvers ++= Seq(
+    "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+    "Spray repository" at "http://repo.spray.io"
+)
 
 scalacOptions ++= Seq("-deprecation","-feature")
 
@@ -18,8 +23,5 @@ libraryDependencies ++= Seq(
     "ch.qos.logback" % "logback-classic" % "1.0.13"
 )
 
-resolvers ++= Seq(
-    "Spray repository" at "http://repo.spray.io",
-    "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
-)
+
 
