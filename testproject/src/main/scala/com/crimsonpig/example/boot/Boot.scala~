@@ -1,0 +1,5 @@
+package com.keith.fs.airport.boot
+
+object Boot extends App {
+	println("boot success");
+}
