@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS airports (
 	ident VARCHAR(4) NOT NULL, 
 	lat DECIMAL(22,18) NOT NULL, 
 	lon DECIMAL(22,18) NOT NULL, 
-	elev INT(7) NOT NULL, 
-	tag VARCHAR(32) NOT NULL, 
-	PRIMARY KEY (tag, ident)
+	elev INT(7) NOT NULL,
+	PRIMARY KEY (ident)
 ) ENGINE=InnoDB;
