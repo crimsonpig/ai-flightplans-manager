@@ -67,7 +67,7 @@ trait RestService extends HttpService with SLF4JLogging {
 //	              airportService.create(airport)
 	            }
 	      }
-	    } ~ 
+	    } /*~ 
 	     get {
 	      parameters('identifier.?, 'latitude.?, 'longitude.?, 'elevation.?).as(AirportSearchParameters) {
 	        searchParameters: AirportSearchParameters => {
@@ -79,7 +79,7 @@ trait RestService extends HttpService with SLF4JLogging {
 	            }
 	        }
 	      }
-	    }
+	    }*/
 	  } ~ 
 	  path("airport" / Segment){
 	    ident => 
