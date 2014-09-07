@@ -3,20 +3,22 @@ package com.keith.fs.airport.rest
 import akka.event.slf4j.SLF4JLogging
 import com.keith.fs.airport.dao.AirportDAO
 import com.keith.fs.airport.domain._
-import net.liftweb.json.Serialization._
-import net.liftweb.json.{Formats}
 import scala.Some
 import spray.http._
 import spray.httpx.unmarshalling._
 import spray.routing._
-import net.liftweb.json.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
-import net.liftweb.json.DefaultFormats
 import com.keith.fs.airport.command._
+import org.json4s.Formats
+import org.json4s.DefaultFormats
+import org.json4s._
+import org.json4s.JsonDSL._
+import org.json4s.jackson.JsonMethods._
+import org.json4s.JsonAST.JObject
+import spray.httpx.Json4sSupport
 
-
-trait RestService extends HttpService with SLF4JLogging {
+trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 //	val airportService = new AirportDAO
 	val createAirport = new CreateAirport
 	val retrieveAirport = new RetrieveAirport
@@ -39,13 +41,15 @@ trait RestService extends HttpService with SLF4JLogging {
 //	      def format(d: Date): String = sdf.format(d)
 //	    }	  
 //	}
-	implicit val liftJsonFormats = new DefaultFormats {}
+//	implicit val liftJsonFormats = new DefaultFormats {}
+	implicit val json4sFormats : Formats = DefaultFormats.withBigDecimal
+	implicit val unmarshaller = Unmarshaller
 	
 	implicit val customRejectionHandler = RejectionHandler {
 	  case rejections => mapHttpResponse {
 	    response => 
 	      response.withEntity(HttpEntity(ContentType(MediaTypes.`application/json`),
-	          write(Map("error" -> response.entity.asString))))
+	          compact(render("error" -> response.entity.asString))))
 	          
 	  }{
 	    RejectionHandler.Default(rejections)
@@ -55,18 +59,24 @@ trait RestService extends HttpService with SLF4JLogging {
 	val rest = respondWithMediaType(MediaTypes.`application/json`){
 	  path("airport") {
 	    post {
-	        entity(Unmarshaller(MediaTypes.`application/json`) {
-	          case httpEntity: HttpEntity => 
-	            read[Airport](httpEntity.asString(HttpCharsets.`UTF-8`))
-	        }) {
-	        airport: Airport =>
-	          ctx: RequestContext => 
-	            handleRequest(ctx, StatusCodes.Created){
-	              log.debug("Creating airport: %s".format(airport))
-	              createAirport.run(airport)
-//	              airportService.create(airport)
-	            }
-	      }
+//	        entity(Unmarshaller(MediaTypes.`application/json`) {
+//	          case httpEntity: HttpEntity => 
+//	            read[Airport](httpEntity.asString(HttpCharsets.`UTF-8`))
+//	        }) {
+//	        airport: Airport =>
+//	          ctx: RequestContext => 
+//	            handleRequest(ctx, StatusCodes.Created){
+//	              log.debug("Creating airport: %s".format(airport))
+//	              createAirport.run(airport)
+////	              airportService.create(airport)
+//	            }
+	    	entity(as[JObject]) { airportJs => 
+	    	  	complete {
+	    	  	  val airport = airportJs.extract[Airport]
+	    	  	  log.debug("Creating airport: %s".format(airport))
+	    	  	  createAirport.run(airport)
+	    	  	}
+	    	}
 	    } /*~ 
 	     get {
 	      parameters('identifier.?, 'latitude.?, 'longitude.?, 'elevation.?).as(AirportSearchParameters) {
@@ -83,7 +93,7 @@ trait RestService extends HttpService with SLF4JLogging {
 	  } ~ 
 	  path("airport" / Segment){
 	    ident => 
-	      put {
+	     /* put {
 	        entity(Unmarshaller(MediaTypes.`application/json`){
 	          case httpEntity: HttpEntity => 
 	            read[Airport](httpEntity.asString(HttpCharsets.`UTF-8`))
@@ -96,7 +106,7 @@ trait RestService extends HttpService with SLF4JLogging {
 //	                airportService.update(ident, airport)
 	              }
 	        }
-	      } ~ 
+	      } ~ */ 
 	      delete {
 	        ctx: RequestContext => 
 	          handleRequest(ctx){
@@ -116,12 +126,12 @@ trait RestService extends HttpService with SLF4JLogging {
 	  }
 	}
 
-	protected def handleRequest(ctx: RequestContext, successCode: StatusCode = StatusCodes.OK)(action: => Either[Failure, _]) {
+	protected def handleRequest(ctx: RequestContext, successCode: StatusCode = StatusCodes.OK)(action: => Either[Failure, Airport]) {
 	  action match {
-	    case Right(result: Object) =>
-	      ctx.complete(successCode, write(result))
+	    case Right(result: Airport) => 
+	      ctx.complete(successCode, result)
 	    case Left(error: Failure) =>
-	      ctx.complete(error.getStatusCode, net.liftweb.json.Serialization.write(Map("error" -> error.message)))
+	      ctx.complete(error.getStatusCode, error.message)
 	    case _ =>
 	      ctx.complete(StatusCodes.InternalServerError)
 	  }
