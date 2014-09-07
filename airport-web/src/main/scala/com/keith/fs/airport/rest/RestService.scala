@@ -24,52 +24,25 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	val retrieveAirport = new RetrieveAirport
 	val deleteAirport = new DeleteAirport 
 	val updateAirport  = new UpdateAirport
-	val searchAirport = new SearchCommand
 	
 	implicit val executionContext = actorRefFactory.dispatcher
-	
-//	implicit val liftJsonFormats = new Formats {
-//	    val dateFormat = new DateFormat {
-//	      val sdf = new SimpleDateFormat("yyyy-MM-dd")
-//	
-//	      def parse(s: String): Option[Date] = try {
-//	        Some(sdf.parse(s))
-//	      } catch {
-//	        case e: Exception => None
-//	      }
-//	
-//	      def format(d: Date): String = sdf.format(d)
-//	    }	  
-//	}
-//	implicit val liftJsonFormats = new DefaultFormats {}
 	implicit val json4sFormats : Formats = DefaultFormats.withBigDecimal
-	implicit val unmarshaller = Unmarshaller
+//	implicit val unmarshaller = Unmarshaller
 	
-	implicit val customRejectionHandler = RejectionHandler {
-	  case rejections => mapHttpResponse {
-	    response => 
-	      response.withEntity(HttpEntity(ContentType(MediaTypes.`application/json`),
-	          compact(render("error" -> response.entity.asString))))
-	          
-	  }{
-	    RejectionHandler.Default(rejections)
-	  }
-	}
+//	implicit val customRejectionHandler = RejectionHandler {
+//	  case rejections => mapHttpResponse {
+//	    response => 
+//	      response.withEntity(HttpEntity(ContentType(MediaTypes.`application/json`),
+//	          compact(render("error" -> response.entity.asString))))
+//	          
+//	  }{
+//	    RejectionHandler.Default(rejections)
+//	  }
+//	}
 	
 	val rest = respondWithMediaType(MediaTypes.`application/json`){
 	  path("airport") {
 	    post {
-//	        entity(Unmarshaller(MediaTypes.`application/json`) {
-//	          case httpEntity: HttpEntity => 
-//	            read[Airport](httpEntity.asString(HttpCharsets.`UTF-8`))
-//	        }) {
-//	        airport: Airport =>
-//	          ctx: RequestContext => 
-//	            handleRequest(ctx, StatusCodes.Created){
-//	              log.debug("Creating airport: %s".format(airport))
-//	              createAirport.run(airport)
-////	              airportService.create(airport)
-//	            }
 	    	entity(as[JObject]) { airportJs => 
 	    	  	complete {
 	    	  	  val airport = airportJs.extract[Airport]
@@ -77,19 +50,7 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	    	  	  createAirport.run(airport)
 	    	  	}
 	    	}
-	    } /*~ 
-	     get {
-	      parameters('identifier.?, 'latitude.?, 'longitude.?, 'elevation.?).as(AirportSearchParameters) {
-	        searchParameters: AirportSearchParameters => {
-	          ctx: RequestContext =>
-	            handleRequest(ctx){
-	              log.debug("Searching for airports with parameters: %s".format(searchParameters))
-	              searchAirport.run(searchParameters)
-//	              airportService.search(searchParameters)
-	            }
-	        }
-	      }
-	    }*/
+	    } 
 	  } ~ 
 	  path("airport" / Segment){
 	    ident => 
@@ -112,7 +73,6 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	          handleRequest(ctx){
 	            log.debug("Deleting airport with id %s".format(ident))
 	            deleteAirport.run(ident)
-//	            airportService.delete(ident)
 	          }
 	      } ~ 
 	      get {
@@ -120,7 +80,6 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	          handleRequest(ctx){
 	            log.debug("Retrieving airport with id %s".format(ident))
 	            retrieveAirport.run(ident)
-//	            airportService.get(ident)
 	          }
 	      }
 	  }
