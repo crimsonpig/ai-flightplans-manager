@@ -28,16 +28,16 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	implicit val json4sFormats : Formats = DefaultFormats.withBigDecimal
 //	implicit val unmarshaller = Unmarshaller
 	
-//	implicit val customRejectionHandler = RejectionHandler {
-//	  case rejections => mapHttpResponse {
-//	    response => 
-//	      response.withEntity(HttpEntity(ContentType(MediaTypes.`application/json`),
-//	          compact(render("error" -> response.entity.asString))))
-//	          
-//	  }{
-//	    RejectionHandler.Default(rejections)
-//	  }
-//	}
+	implicit val customRejectionHandler = RejectionHandler {
+	  case rejections => mapHttpResponse {
+	    response => 
+	      response.withEntity(HttpEntity(ContentType(MediaTypes.`application/json`),
+	          compact(render("error" -> response.entity.asString))))
+	          
+	  }{
+	    RejectionHandler.Default(rejections)
+	  }
+	}
 	
 	val rest = respondWithMediaType(MediaTypes.`application/json`){
 	  path("airport") {
