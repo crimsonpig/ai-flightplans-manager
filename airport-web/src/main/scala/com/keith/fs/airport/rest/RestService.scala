@@ -88,8 +88,8 @@ trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
 	  action match {
 	    case Right(result: Airport) => 
 	      ctx.complete(successCode, result)
-	    case Left(error: Failure) =>
-	      ctx.complete(error.getStatusCode, error.message)
+	    case Left(error: Failure) => 
+	      ctx.complete(error.getStatusCode, render("error" -> error.message))
 	    case _ =>
 	      ctx.complete(StatusCodes.InternalServerError)
 	  }
