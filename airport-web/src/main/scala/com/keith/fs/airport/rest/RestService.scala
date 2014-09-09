@@ -19,7 +19,6 @@ import org.json4s.JsonAST.JObject
 import spray.httpx.Json4sSupport
 
 trait RestService extends HttpService with SLF4JLogging with Json4sSupport {
-//	val airportService = new AirportDAO
 	val createAirport = new CreateAirport
 	val retrieveAirport = new RetrieveAirport
 	val deleteAirport = new DeleteAirport 
