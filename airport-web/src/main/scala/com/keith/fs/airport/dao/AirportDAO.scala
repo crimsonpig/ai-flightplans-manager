@@ -2,7 +2,7 @@ package com.keith.fs.airport.dao
 
 //import scala.slick.session.Database
 import com.keith.fs.airport.domain._
-import com.keith.fs.airport.config.Configuration
+import com.keith.fs.airport.boot.Configuration
 import java.sql._
 import scala.Some
 //import scala.slick.driver.MySQLDriver.simple.Database.threadLocalSession

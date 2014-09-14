@@ -1,7 +1,6 @@
 package com.keith.fs.airport.boot
 
 import akka.actor.{Props, ActorSystem}
-import com.keith.fs.airport.config.Configuration
 import akka.io.IO
 import spray.can.Http
 import com.keith.fs.airport.rest.RestServiceActor

@@ -1,4 +1,4 @@
-package com.keith.fs.airport.config
+package com.keith.fs.airport.boot
 
 import com.typesafe.config.ConfigFactory
 import scala.util.Try
